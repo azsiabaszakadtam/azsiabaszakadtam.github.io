@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TyG-index Kalkulátor (Triglicerid-Glükóz )</title>
+    <meta name="description" content="Egyszerű és gyors online TyG-index kalkulátor magyar laborértékekhez (mmol/L). Számolja ki az inzulinrezisztencia kockázatát jelző triglicerid-glükóz indexet.">
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f4f7f9;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 500px;
+            width: 100%;
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            box-sizing: border-box;
+        }
+        h1 {
+            text-align: center;
+            color: #1a237e;
+            margin-top: 0;
+            margin-bottom: 10px;
+            font-size: 24px;
+        }
+        .subtitle {
+            text-align: center;
+            font-size: 15px;
+            color: #555;
+            margin-bottom: 30px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #444;
+        }
+        input[type="number"] {
+            width: 100%;
+            padding: 12px;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+        button {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(90deg, #007bff, #0056b3);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        #result-box {
+            margin-top: 25px;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            display: none;
+        }
+        #result-value { font-size: 36px; font-weight: 700; margin: 10px 0; }
+        .optimal { background-color: #eaf7ec; border-left: 5px solid #28a745; }
+        .risk { background-color: #fdeeed; border-left: 5px solid #dc3545; }
+        .optimal #result-value { color: #28a745; }
+        .risk #result-value { color: #dc3545; }
+        .footer-note {
+            font-size: 12px;
+            color: #888;
+            text-align: center;
+            margin-top: 30px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>TyG-index Kalkulátor</h1>
+        <p class="subtitle">Számítsa ki az inzulinrezisztencia kockázatát jelző triglicerid-glükóz indexet magyar laborlelet (mmol/L) alapján.</p>
+        <div style="margin-bottom: 20px;">
+            <label for="triglyceride_mmol">Éhgyomri trigliceridszint (mmol/L)</label>
+            <input type="number" id="triglyceride_mmol" placeholder="pl. 1.7" step="0.01">
+        </div>
+        <div style="margin-bottom: 20px;">
+            <label for="glucose_mmol">Éhgyomri vércukorszint (mmol/L)</label>
+            <input type="number" id="glucose_mmol" placeholder="pl. 5.6" step="0.01">
+        </div>
+        <button onclick="calculateTyG()">Számítás</button>
+        <div id="result-box">
+            <h3>Az Ön TyG-indexe:</h3>
+            <p id="result-value"></p>
+            <p id="result-interpretation" style="font-size: 15px; margin: 0;"></p>
+        </div>
+        <p class="footer-note"><strong>Figyelem:</strong> A kalkulátor csak tájékoztató jellegű, nem helyettesíti az orvosi diagnózist. Az eredményt mindig beszélje meg kezelőorvosával!</p>
+    </div>
+    <script>
+        function calculateTyG() {
+            const trig_mmol = parseFloat(document.getElementById('triglyceride_mmol').value);
+            const gluc_mmol = parseFloat(document.getElementById('glucose_mmol').value);
+            if (isNaN(trig_mmol) || isNaN(gluc_mmol) || trig_mmol <= 0 || gluc_mmol <= 0) {
+                alert("Kérjük, adjon meg érvényes, pozitív számokat mindkét mezőbe!");
+                return;
+            }
+            const trig_mgdl = trig_mmol * 88.57;
+            const gluc_mgdl = gluc_mmol * 18.0182;
+            const tygIndex = Math.log((trig_mgdl * gluc_mgdl) / 2);
+            const finalResult = tygIndex.toFixed(2);
+            const resultBox = document.getElementById('result-box');
+            const resultValue = document.getElementById('result-value');
+            const interpretation = document.getElementById('result-interpretation');
+            resultValue.textContent = finalResult;
+            if (finalResult < 4.49) {
+                interpretation.textContent = "Ez az érték az optimális tartományba esik.";
+                resultBox.className = 'optimal';
+            } else {
+                interpretation.textContent = "Ez az érték inzulinrezisztenciára utalhat. Kérjük, konzultáljon orvosával!";
+                resultBox.className = 'risk';
+            }
+            resultBox.style.display = 'block';
+        }
+    </script>
+</body>
+</html>
